@@ -53,7 +53,8 @@
 		}
 		return ret;
 	}
-
+	var vendor = randomString(8);
+	var renderer = randomString(8);
 	if(args[0]===1){
 		function farbleWebGLparam(ctx,param){
 			var ret;
@@ -79,8 +80,10 @@
 					ret = null;
 					break;
 				case 0x9245:
+					ret = vendor;
+					break;
 				case 0x9246:
-					ret = randomString(8);
+					ret = renderer;
 					break;
 				default:
 					ret = origGetParameter.call(ctx, param);
@@ -109,8 +112,10 @@
 					ret = farbleGLint(result);
 					break;
 				case 0x9245:
+					ret = vendor;
+					break;
 				case 0x9246:
-					ret = randomString(8);
+					ret = renderer;
 					break;
 				default:
 					ret = origGetParameter.call(ctx, param);
@@ -205,6 +210,33 @@
 			else if(args[0]===0){
 				return origGetShaderPrecisionFormat.call(ctx, ...fcarg);
 			}
+		}`;
+	var farblePixels = `
+		function lfsr_next(v) {
+			return BigInt.asUintN(64, ((v >> 1n) | (((v << 62n) ^ (v << 61n)) & (~(~0n << 63n) << 62n))));
+		}
+		function farblePixels(ctx, x, y, width, height, format, type, pixels, offset) {
+			if(args[0]===1){
+				return;
+			}
+			else if(args[0]===0){
+				origReadPixels.call(ctx, x, y, width, height, format, type, pixels, offset);
+				var pixel_count = BigInt(width * height);
+				var channel = domainHash[0].charCodeAt(0) % 3;
+				var canvas_key = domainHash;
+				var v = BigInt(sessionHash);
+
+				for (let i = 0; i < 32; i++) {
+					var bit = canvas_key[i];
+					for (let j = 8; j >= 0; j--) {
+						var pixel_index = (4 * Number(v % pixel_count) + channel);
+						pixels[pixel_index] = pixels[pixel_index] ^ (bit & 0x1);
+						bit = bit >> 1;
+						v = lfsr_next(v);
+					}
+				}
+			}
+			return;
 		}`;
  	var wrappers = [
 		{
@@ -360,11 +392,27 @@
 					wrapped_name: "origReadPixels",
 				}
 			],
-			helping_code: farbleReturn,
+			helping_code: farblePixels,
 			original_function: "parent.WebGLRenderingContext.prototype.readPixels",
-			wrapping_function_args: "...args",
+			wrapping_function_args: "x, y, width, height, format, type, pixels, offset",
 			wrapping_function_body: `
-				return farbleReturn("origReadPixels", this, ...args);
+				farblePixels(this, x, y, width, height, format, type, pixels, offset);
+			`,
+		},
+		{
+			parent_object: "WebGL2RenderingContext.prototype",
+			parent_object_property: "readPixels",
+			wrapped_objects: [
+				{
+					original_name: "WebGL2RenderingContext.prototype.readPixels",
+					wrapped_name: "origReadPixels",
+				}
+			],
+			helping_code: farblePixels,
+			original_function: "parent.WebGL2RenderingContext.prototype.readPixels",
+			wrapping_function_args: "x, y, width, height, format, type, pixels, offset",
+			wrapping_function_body: `
+				farblePixels(this, x, y, width, height, format, type, pixels, offset);
 			`,
 		},
 		{

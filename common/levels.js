@@ -200,7 +200,8 @@ var wrapping_groups = {
 				"WebGLRenderingContext.prototype.getVertexAttribOffset",
 				"WebGLRenderingContext.prototype.getSupportedExtensions",
 				"WebGLRenderingContext.prototype.getExtension",
-				"WebGLRenderingContext.prototype.readPixels"
+				"WebGLRenderingContext.prototype.readPixels",
+				"WebGL2RenderingContext.prototype.readPixels"
 			],
 		},
 		{
