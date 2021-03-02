@@ -38,43 +38,43 @@
 (function() {
 
 	var audioFarble = `
-	function strToUint(str,length){
-		var sub = str.substring(0,length);
-		var ret = "";
-		for (var i = sub.length-1; i >= 0; i--) {
-				ret += ((sub[i].charCodeAt(0)).toString(2).padStart(8, "0"));
-		}
-		return "0b"+ret;
-	}
-	function lfsr_next32(v) {
-		return ((v >>> 1) | (((v << 30) ^ (v << 29)) & (~(~0 << 31) << 30)));
-	}
-	function PseudoRandomSequence(seed) {
-		if ( typeof this.v == 'undefined' ) {
-				this.v = seed;
+		function strToUint(str, length){
+			var sub = str.substring(0,length);
+			var ret = "";
+			for (var i = sub.length-1; i >= 0; i--) {
+					ret += ((sub[i].charCodeAt(0)).toString(2).padStart(8, "0"));
 			}
-		const maxUInt32n = 4294967295;
-		this.v = lfsr_next32(this.v);
-		return ((this.v>>>0) / maxUInt32n) / 10;
-	}
-	var fudge = BigInt(strToUint(domainHash,8))*1000n;
-	var maxUInt64 = 18446744073709551615n;
-	var fudge_factor = 0.99 + (Number(fudge / maxUInt64) / 100000);
-	if(args[0] == 0){
-		function farble(arr){
-			for (var i = 0; i < arr.length; i++) {
-				arr[i] = arr[i]*fudge_factor;
-			}
+			return "0b"+ret;
 		}
-	}
-	else if(args[0] == 1){
-		var seed = Number(strToUint(domainHash,4));
-		function farble(arr){
-			for (var i = 0; i < arr.length; i++) {
-				arr[i] = PseudoRandomSequence(seed);
+		function lfsr_next32(v) {
+			return ((v >>> 1) | (((v << 30) ^ (v << 29)) & (~(~0 << 31) << 30)));
+		}
+		function PseudoRandomSequence(seed){
+			if (typeof this.v == 'undefined'){
+					this.v = seed;
+				}
+			const maxUInt32n = 4294967295;
+			this.v = lfsr_next32(this.v);
+			return ((this.v>>>0) / maxUInt32n) / 10;
+		}
+		var fudge = BigInt(strToUint(domainHash,8))*1000n;
+		var maxUInt64 = 18446744073709551615n;
+		var fudge_factor = 0.99 + (Number(fudge / maxUInt64) / 100000);
+		if(args[0] == 0){
+			function farble(arr){
+				for (var i = 0; i < arr.length; i++) {
+					arr[i] = arr[i]*fudge_factor;
+				}
 			}
 		}
-	}
+		else if(args[0] == 1){
+			var seed = Number(strToUint(domainHash,4));
+			function farble(arr){
+				for (var i = 0; i < arr.length; i++) {
+					arr[i] = PseudoRandomSequence(seed);
+				}
+			}
+		}
 	`;
 	var wrappers = [
 		{
@@ -90,7 +90,7 @@
 			original_function: "parent.AudioBuffer.prototype.getChannelData",
 			wrapping_function_args: "channel",
 			wrapping_function_body: `
-				var floatArr = origGetChannelData.call(this,channel);
+				var floatArr = origGetChannelData.call(this, channel);
 				farble(floatArr);
 				return floatArr;
 			`,
@@ -124,8 +124,8 @@
 			helping_code:audioFarble,
 			wrapping_function_args: "destination",
 			wrapping_function_body: `
-			origGetByteTimeDomainData.call(this, destination);
-			farble(destination);
+				origGetByteTimeDomainData.call(this, destination);
+				farble(destination);
 			`,
 		},
 		{
@@ -140,8 +140,8 @@
 			helping_code:audioFarble,
 			wrapping_function_args: "destination",
 			wrapping_function_body: `
-			origGetFloatTimeDomainData.call(this, destination);
-			farble(destination);
+				origGetFloatTimeDomainData.call(this, destination);
+				farble(destination);
 			`,
 		},
 		{
@@ -156,8 +156,8 @@
 			helping_code:audioFarble,
 			wrapping_function_args: "destination",
 			wrapping_function_body: `
-			origGetByteFrequencyData.call(this, destination);
-			farble(destination);
+				origGetByteFrequencyData.call(this, destination);
+				farble(destination);
 			`,
 		},
 		{
