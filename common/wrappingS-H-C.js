@@ -147,7 +147,7 @@
 					fake.setAttribute("width", this.width);
 					fake.setAttribute("height", this.height);
 					var stx = fake.getContext("2d");
-					var imageData = ctx.getImageData(0,0,this.width,this.height);
+					var imageData = ctx.getImageData(0, 0, this.width, this.height);
 					stx.putImageData(imageData, 0, 0);
 					return origToDataURL.call(fake, ...args);
 				}
