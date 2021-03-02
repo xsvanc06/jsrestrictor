@@ -124,7 +124,6 @@
 			helping_code:audioFarble,
 			wrapping_function_args: "destination",
 			wrapping_function_body: `
-			console.log(this, destination);
 			origGetByteTimeDomainData.call(this, destination);
 			farble(destination);
 			`,
