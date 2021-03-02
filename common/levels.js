@@ -515,7 +515,7 @@ var level_2 = {
 	"audiobuffer": true,
 	"audiobuffer_method": 0,
 	"webgl": true,
-	"webgl_method": 0,
+	"webgl_method": 1,
 	"enumerateDevices": true,
 	"geolocation": true,
 	"geolocation_locationObfuscationType": 3,
