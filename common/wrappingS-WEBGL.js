@@ -172,15 +172,6 @@
 				return eval(name+".call(ctx, ...fcarg);");
 			}
 		}`;
-	var farbleState = `
-		function farbleState(name, ctx, ...fcarg){
-			if(args[0]===1){
-				return null;
-			}
-			else if(args[0]===0){
-				return eval(name+".call(ctx, ...fcarg);");
-			}
-		}`;
 	var farbleNullArray = `
 		function farbleNullArray(name, ctx, ...fcarg){
 			if(args[0]===1){
@@ -211,6 +202,186 @@
 				return origGetShaderPrecisionFormat.call(ctx, ...fcarg);
 			}
 		}`;
+	var farbleGetActiveUniform = `
+		function farbleGetActiveUniform(ctx, ...fcarg){
+			if(args[0]===1){
+				var ret = Object.create(WebGLActiveInfo.prototype);
+				Object.defineProperties(ret, {
+					name:{
+						value:""
+					},
+					type:{
+						value:5124
+					},
+					size:{
+						value:0
+					}
+				});
+				return ret;
+			}
+			else if(args[0]===0){
+				return origGetActiveUniform.call(ctx, ...fcarg);
+			}
+		}`;
+	var farbleGetFrameBufferAttachmentParameter = `
+		function farbleGetFrameBufferAttachmentParameter(ctx, target, attachment, pname){
+			if(args[0]===0){
+				return origFrameBufferAttachmentParameter.call(ctx, target, attachment, pname);
+			}
+			else if(args[0]===1){
+				var ret = null;
+				switch (pname) {
+					case 0x8CD2:
+					case 0x8212:
+					case 0x8213:
+					case 0x8214:
+					case 0x8215:
+					case 0x8216:
+					case 0x8217:
+					case 0x8CD4:
+					case 0x8CD0:
+						ret = 0;
+						break;
+					case 0x8CD3:
+						ret = 34069;
+						break;
+					case 0x8210:
+						ret = 9729;
+						break;
+					case 0x8211:
+						ret = 5124;
+						break;
+					case 0x8211:
+						ret = 5124;
+						break;
+				}
+				return ret;
+			}
+		}
+	`;
+	var farbleGetVertexAttrib = `
+		function farbleGetVertexAttrib(ctx, index, pname){
+			if(args[0]===0){
+				return origGetVertexAttrib.call(ctx, index, pname);
+			}
+			else if(args[0]===1){
+				var ret = null;
+				switch (pname) {
+					case 0x8622:
+					case 0x886A:
+					case 0x88FD:
+						ret = false;
+						break;
+					case 0x8623:
+					case 0x8624:
+					case 0x88FE:
+						ret = 0;
+						break;
+					case 0x8625:
+						ret = 5120;
+						break;
+					case 0x8626:
+						ret = new Float32Array([0,0,0,0]);
+						break;
+				}
+				return ret;
+			}
+		}
+	`;
+	var farbleGetBufferParameter = `
+		function farbleGetBufferParameter(ctx, target, pname){
+			if(args[0]===0){
+				return origGetBufferParameter.call(ctx, target, pname);
+			}
+			else if(args[0]===1){
+				var ret = null;
+				switch (pname) {
+					case 0x8764:
+						ret = 0;
+						break;
+					case 0x8765:
+						ret = 35044;
+						break;
+				}
+				return ret;
+			}
+		}
+	`;
+	var farbleGetShaderParameter = `
+		function farbleGetShaderParameter(ctx, shader, pname){
+			if(args[0]===0){
+				return origGetShaderParameter.call(ctx, shader, pname);
+			}
+			else if(args[0]===1){
+				var ret = null;
+				switch (pname) {
+					case 0x8B80:
+					case 0x8B81:
+						ret = false;
+						break;
+					case 0x8B4F:
+						ret = 35633;
+						break;
+				}
+				return ret;
+			}
+		}
+	`;
+	var farbleGetRenderbufferParameter = `
+		function farbleGetRenderbufferParameter(ctx, target, pname){
+			if(args[0]===0){
+				return origGetRenderbufferParameter.call(ctx, target, pname);
+			}
+			else if(args[0]===1){
+				var ret = null;
+				switch (pname) {
+					case 0x8D42:
+					case 0x8D43:
+					case 0x8D50:
+					case 0x8D51:
+					case 0x8D52:
+					case 0x8D53:
+					case 0x8D54:
+					case 0x8D55:
+					case 0x8CAB:
+						ret = 0;
+						break;
+					case 0x8D44:
+						ret = 32854;
+						break;
+				}
+				return ret;
+			}
+		}
+	`;
+	var farbleGetProgramParameter = `
+		function farbleGetProgramParameter(ctx, program, pname){
+			if(args[0]===0){
+				return origGetProgramParameter.call(ctx, program, pname);
+			}
+			else if(args[0]===1){
+				var ret = null;
+				switch (pname) {
+					case 0x8B80:
+					case 0x8B82:
+					case 0x8B83:
+						ret = false;
+						break;
+					case 0x8B85:
+					case 0x8B89:
+					case 0x8B86:
+					case 0x8C83:
+					case 0x8A36:
+						ret = 0;
+						break;
+					case 0x8C7F:
+						ret = 35981;
+						break;
+				}
+				return ret;
+			}
+		}
+	`;
 	var farblePixels = `
 		function lfsr_next(v) {
 			return BigInt.asUintN(64, ((v >> 1n) | (((v << 62n) ^ (v << 61n)) & (~(~0n << 63n) << 62n))));
@@ -328,11 +499,11 @@
 					wrapped_name: "origGetActiveUniform",
 				}
 			],
-			helping_code: farbleNull,
+			helping_code: farbleGetActiveUniform,
 			original_function: "parent.WebGLRenderingContext.prototype.getActiveUniform",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleNull("origGetActiveUniform", this, ...args);
+				return farbleGetActiveUniform(this, ...args);
 			`,
 		},
 		{
@@ -424,11 +595,11 @@
 					wrapped_name: "origGetFramebufferAttachmentParameter",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleGetFrameBufferAttachmentParameter,
 			original_function: "parent.WebGLRenderingContext.prototype.getFramebufferAttachmentParameter",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetFramebufferAttachmentParameter", this, ...args);
+				return farbleGetFrameBufferAttachmentParameter(this, ...args);
 			`,
 		},
 		{
@@ -440,11 +611,11 @@
 					wrapped_name: "origGetBufferParameter",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleGetBufferParameter,
 			original_function: "parent.WebGLRenderingContext.prototype.getBufferParameter",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetBufferParameter", this, ...args);
+				return farbleGetBufferParameter(this, ...args);
 			`,
 		},
 		{
@@ -456,11 +627,11 @@
 					wrapped_name: "origGetProgramParameter",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleGetProgramParameter,
 			original_function: "parent.WebGLRenderingContext.prototype.getProgramParameter",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetProgramParameter", this, ...args);
+				return farbleGetProgramParameter(this, ...args);
 			`,
 		},
 		{
@@ -472,11 +643,11 @@
 					wrapped_name: "origGetRenderbufferParameter",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleGetRenderbufferParameter,
 			original_function: "parent.WebGLRenderingContext.prototype.getRenderbufferParameter",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetRenderbufferParameter", this, ...args);
+				return farbleGetRenderbufferParameter(this, ...args);
 			`,
 		},
 		{
@@ -488,11 +659,11 @@
 					wrapped_name: "origGetShaderParameter",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleGetShaderParameter,
 			original_function: "parent.WebGLRenderingContext.prototype.getShaderParameter",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetShaderParameter", this, ...args);
+				return farbleGetShaderParameter(this, ...args);
 			`,
 		},
 		{
@@ -504,11 +675,11 @@
 					wrapped_name: "origGetVertexAttrib",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleGetVertexAttrib,
 			original_function: "parent.WebGLRenderingContext.prototype.getVertexAttrib",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetVertexAttrib", this, ...args);
+				return farbleGetVertexAttrib(this, ...args);
 			`,
 		},
 		{
@@ -520,11 +691,11 @@
 					wrapped_name: "origGetUniform",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleZero,
 			original_function: "parent.WebGLRenderingContext.prototype.getUniform",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetUniform", this, ...args);
+				return farbleZero("origGetUniform", this, ...args);
 			`,
 		},
 		{
@@ -536,11 +707,11 @@
 					wrapped_name: "origGetTexParameter",
 				}
 			],
-			helping_code: farbleState,
+			helping_code: farbleNull,
 			original_function: "parent.WebGLRenderingContext.prototype.getTexParameter",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleState("origGetTexParameter", this, ...args);
+				return farbleNull("origGetTexParameter", this, ...args);
 			`,
 		},
 		{
