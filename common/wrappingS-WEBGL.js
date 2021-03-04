@@ -61,10 +61,15 @@
 			switch (param) {
 				case 0x1F02:
 				case 0x1F01:
+				case 0x1F00:
 				case 0x8B8C:
+					ret = "";
+					break;
 				case 0x8F36:
 				case 0x8F37:
 				case 0x8CA6:
+					ret = null;
+					break;
 				case 0x8A2B:
 				case 0x8B4A:
 				case 0x9122:
@@ -77,7 +82,8 @@
 				case 0x8A2E:
 				case 0x8A31:
 				case 0x8A33:
-					ret = null;
+				case 0x8A30:
+					ret = 0;
 					break;
 				case 0x9245:
 					ret = vendor;
@@ -105,9 +111,15 @@
 				case 0x9125:
 				case 0x8A2F:
 				case 0x8A2E:
-
 				case 0x8A31:
 				case 0x8A33:
+				case 0x8869:
+				case 0x8DFB:
+				case 0x8B4C:
+				case 0x0D33:
+				case 0x851C:
+				case 0x8073:
+				case 0x88FF:
 					var result = origGetParameter.call(ctx, param);
 					ret = farbleGLint(result);
 					break;
