@@ -214,8 +214,8 @@
 				return origGetShaderPrecisionFormat.call(ctx, ...fcarg);
 			}
 		}`;
-	var farbleGetActiveUniform = `
-		function farbleGetActiveUniform(ctx, ...fcarg){
+	var farbleGetActives = `
+		function farbleGetActives(name, ctx, ...fcarg){
 			if(args[0]===1){
 				var ret = Object.create(WebGLActiveInfo.prototype);
 				Object.defineProperties(ret, {
@@ -232,7 +232,7 @@
 				return ret;
 			}
 			else if(args[0]===0){
-				return origGetActiveUniform.call(ctx, ...fcarg);
+				return eval(name+".call(ctx, ...fcarg);");
 			}
 		}`;
 	var farbleGetFrameBufferAttachmentParameter = `
@@ -479,11 +479,11 @@
 					wrapped_name: "origGetActiveAttrib",
 				}
 			],
-			helping_code: farbleNull,
+			helping_code: farbleGetActives,
 			original_function: "parent.WebGLRenderingContext.prototype.getActiveAttrib",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleNull("origGetActiveAttrib", this, ...args);
+				return farbleGetActives("origGetActiveAttrib", this, ...args);
 			`,
 		},
 		{
@@ -511,11 +511,11 @@
 					wrapped_name: "origGetActiveUniform",
 				}
 			],
-			helping_code: farbleGetActiveUniform,
+			helping_code: farbleGetActives,
 			original_function: "parent.WebGLRenderingContext.prototype.getActiveUniform",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farbleGetActiveUniform(this, ...args);
+				return farbleGetActives("origGetActiveUniform", this, ...args);
 			`,
 		},
 		{
