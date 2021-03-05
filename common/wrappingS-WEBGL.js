@@ -37,105 +37,105 @@
  */
 (function() {
 
-	var webglParamFarble = `
-	function farbleGLint(param){
-		var ret = 0;
-		if(param > 0){
-			ret = param - (Number(prng().toString().slice(2,10)) % 2);
-		}
-		return ret;
-	}
-	function randomString(length) {
-		var ret = "";
-		var charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		for ( var i = 0; i < length; i++ ) {
-				ret += charSet.charAt(Math.floor(prng() * charSet.length));
-		}
-		return ret;
-	}
-	var vendor = randomString(8);
-	var renderer = randomString(8);
-	if(args[0]===1){
-		function farbleWebGLparam(ctx,param){
-			var ret;
-			switch (param) {
-				case 0x1F02:
-				case 0x1F01:
-				case 0x1F00:
-				case 0x8B8C:
-					ret = "";
-					break;
-				case 0x8F36:
-				case 0x8F37:
-				case 0x8CA6:
-					ret = null;
-					break;
-				case 0x8A2B:
-				case 0x8B4A:
-				case 0x9122:
-				case 0x8B4B:
-				case 0x8C8A:
-				case 0x8B49:
-				case 0x8A2D:
-				case 0x9125:
-				case 0x8A2F:
-				case 0x8A2E:
-				case 0x8A31:
-				case 0x8A33:
-				case 0x8A30:
-					ret = 0;
-					break;
-				case 0x9245:
-					ret = vendor;
-					break;
-				case 0x9246:
-					ret = renderer;
-					break;
-				default:
-					ret = origGetParameter.call(ctx, param);
+	var farbleWebGLparam = `
+		function farbleGLint(number){
+			var ret = 0;
+			if(number > 0){
+				ret = number - (Number(prng().toString().slice(2,10)) % 2);
 			}
 			return ret;
 		}
-	}
-	else if(args[0]===0){
-		function farbleWebGLparam(ctx,param){
-			var ret;
-			switch (param) {
-				case 0x8B4A:
-				case 0x8A2B:
-				case 0x9122:
-				case 0x8B4B:
-				case 0x8C8A:
-				case 0x8B49:
-				case 0x8A2D:
-				case 0x9125:
-				case 0x8A2F:
-				case 0x8A2E:
-				case 0x8A31:
-				case 0x8A33:
-				case 0x8869:
-				case 0x8DFB:
-				case 0x8B4C:
-				case 0x0D33:
-				case 0x851C:
-				case 0x8073:
-				case 0x88FF:
-					var result = origGetParameter.call(ctx, param);
-					ret = farbleGLint(result);
-					break;
-				case 0x9245:
-					ret = vendor;
-					break;
-				case 0x9246:
-					ret = renderer;
-					break;
-				default:
-					ret = origGetParameter.call(ctx, param);
+		function randomString(length) {
+			var ret = "";
+			var charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+			for ( var i = 0; i < length; i++ ) {
+					ret += charSet.charAt(Math.floor(prng() * charSet.length));
 			}
 			return ret;
 		}
-	}`;
-
+		var vendor = randomString(8);
+		var renderer = randomString(8);
+		if(args[0]===1){
+			function farbleWebGLparam(ctx, pname){
+				var ret;
+				switch (pname) {
+					case 0x1F02:
+					case 0x1F01:
+					case 0x1F00:
+					case 0x8B8C:
+						ret = "";
+						break;
+					case 0x8F36:
+					case 0x8F37:
+					case 0x8CA6:
+						ret = null;
+						break;
+					case 0x8A2B:
+					case 0x8B4A:
+					case 0x9122:
+					case 0x8B4B:
+					case 0x8C8A:
+					case 0x8B49:
+					case 0x8A2D:
+					case 0x9125:
+					case 0x8A2F:
+					case 0x8A2E:
+					case 0x8A31:
+					case 0x8A33:
+					case 0x8A30:
+						ret = 0;
+						break;
+					case 0x9245:
+						ret = vendor;
+						break;
+					case 0x9246:
+						ret = renderer;
+						break;
+					default:
+						ret = origGetParameter.call(ctx, pname);
+				}
+				return ret;
+			}
+		}
+		else if(args[0]===0){
+			function farbleWebGLparam(ctx, pname){
+				var ret;
+				switch (pname) {
+					case 0x8B4A:
+					case 0x8A2B:
+					case 0x9122:
+					case 0x8B4B:
+					case 0x8C8A:
+					case 0x8B49:
+					case 0x8A2D:
+					case 0x9125:
+					case 0x8A2F:
+					case 0x8A2E:
+					case 0x8A31:
+					case 0x8A33:
+					case 0x8869:
+					case 0x8DFB:
+					case 0x8B4C:
+					case 0x0D33:
+					case 0x851C:
+					case 0x8073:
+					case 0x88FF:
+						var result = origGetParameter.call(ctx, pname);
+						ret = farbleGLint(result);
+						break;
+					case 0x9245:
+						ret = vendor;
+						break;
+					case 0x9246:
+						ret = renderer;
+						break;
+					default:
+						ret = origGetParameter.call(ctx, pname);
+				}
+				return ret;
+			}
+		}
+	`;
 	var farbleNull = `
 		function farbleNull(name, ctx, ...fcarg){
 			if(args[0]===1){
@@ -165,25 +165,6 @@
 				return eval(name+".call(ctx, ...fcarg);");
 			}
 		}`;
-
-	var farbleString = `
-		function farbleString(name, ctx, ...fcarg){
-			if(args[0]===1){
-				return "";
-			}
-			else if(args[0]===0){
-				return eval(name+".call(ctx, ...fcarg);");
-			}
-		}`;
-	var farbleReturn = `
-		function farbleReturn(name, ctx, ...fcarg){
-			if(args[0]===1){
-				return;
-			}
-			else if(args[0]===0){
-				return eval(name+".call(ctx, ...fcarg);");
-			}
-		}`;
 	var farbleNullArray = `
 		function farbleNullArray(name, ctx, ...fcarg){
 			if(args[0]===1){
@@ -193,8 +174,8 @@
 				return eval(name+".call(ctx, ...fcarg);");
 			}
 		}`;
-	var farblePrecisionFormat = `
-		function farblePrecisionFormat(ctx, ...fcarg){
+	var farbleGetPrecisionFormat = `
+		function farbleGetPrecisionFormat(ctx, ...fcarg){
 			if(args[0]===1){
 				var ret = Object.create(WebGLShaderPrecisionFormat.prototype);
 				Object.defineProperties(ret, {
@@ -259,9 +240,6 @@
 						break;
 					case 0x8210:
 						ret = 9729;
-						break;
-					case 0x8211:
-						ret = 5124;
 						break;
 					case 0x8211:
 						ret = 5124;
@@ -431,7 +409,7 @@
 					wrapped_name: "origGetParameter",
 				}
 			],
-			helping_code: webglParamFarble,
+			helping_code: farbleWebGLparam,
 			original_function: "parent.WebGLRenderingContext.prototype.getParameter",
 			wrapping_function_args: "constant",
 			wrapping_function_body: `
@@ -447,7 +425,7 @@
 					wrapped_name: "origGetParameter",
 				}
 			],
-			helping_code: webglParamFarble,
+			helping_code: farbleWebGLparam,
 			original_function: "parent.WebGL2RenderingContext.prototype.getParameter",
 			wrapping_function_args: "constant",
 			wrapping_function_body: `
@@ -735,11 +713,11 @@
 					wrapped_name: "origGetShaderPrecisionFormat",
 				}
 			],
-			helping_code: farblePrecisionFormat,
+			helping_code: farbleGetPrecisionFormat,
 			original_function: "parent.WebGLRenderingContext.prototype.getShaderPrecisionFormat",
 			wrapping_function_args: "...args",
 			wrapping_function_body: `
-				return farblePrecisionFormat(this, ...args);
+				return farbleGetPrecisionFormat(this, ...args);
 			`,
 		}
 	];
