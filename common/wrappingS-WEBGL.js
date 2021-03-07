@@ -303,8 +303,8 @@
 				return eval(name+".call(ctx, ...fcarg);");
 			}
 		}`;
-	var farbleGetFrameBufferAttachmentParameter = `
-		function farbleGetFrameBufferAttachmentParameter(ctx, target, attachment, pname){
+	var farbleGetFramebufferAttachmentParameter = `
+		function farbleGetFramebufferAttachmentParameter(ctx, target, attachment, pname){
 			if(args[0]===0){
 				return origFrameBufferAttachmentParameter.call(ctx, target, attachment, pname);
 			}
@@ -767,7 +767,7 @@
 					wrapped_name: "origGetFramebufferAttachmentParameter",
 				}
 			],
-			helping_code: farbleGetFrameBufferAttachmentParameter,
+			helping_code: farbleGetFramebufferAttachmentParameter,
 			original_function: "parent.WebGLRenderingContext.prototype.getFramebufferAttachmentParameter",
 			wrapping_function_args: "...args",
 			/** \fn fake WebGLRenderingContext.prototype.getFramebufferAttachmentParameter
@@ -778,7 +778,7 @@
 			 *	* (1) - bottom value depending on parameter [34069, 9729, 5124, 0]
 			 */
 			wrapping_function_body: `
-				return farbleGetFrameBufferAttachmentParameter(this, ...args);
+				return farbleGetFramebufferAttachmentParameter(this, ...args);
 			`,
 		},
 		{
